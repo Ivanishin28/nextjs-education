@@ -1,3 +1,5 @@
+"use client";
+
 import { ChangeEvent, useState } from "react";
 import { UserViewModel } from "../models/UserViewModel";
 import SearchUsersByName from "../services/SearchUserByName";
@@ -10,7 +12,6 @@ const SearchUsers = () => {
 
   const filterUsers = async (name: string) => {
     const users = await SearchUsersByName(name);
-    console.log(users);
     if (users) {
       foundUsersChange(users);
     }
