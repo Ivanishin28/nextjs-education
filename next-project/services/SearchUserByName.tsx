@@ -1,16 +1,5 @@
 import { UserViewModel } from "../models/UserViewModel";
-
-const mapApiToViewModel = (data: any): UserViewModel => {
-  const model = new UserViewModel();
-  if (data) {
-    model.firstName = data.firstName;
-    model.lastName = data.lastName;
-    model.address = data.address.address;
-    model.image = data.image;
-  }
-
-  return model;
-};
+import MapApiToUserViewModel from "./Mapping/MapApiToUserViewModel";
 
 const SearchUsersByName = async (
   name: string
@@ -25,7 +14,7 @@ const SearchUsersByName = async (
       }
       const apiUsers: any[] = data.users;
       const users: UserViewModel[] = apiUsers.map((apiUser: any) =>
-        mapApiToViewModel(apiUser)
+        MapApiToUserViewModel(apiUser)
       );
       return users;
     });
