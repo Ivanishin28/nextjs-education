@@ -6,7 +6,6 @@ const GetUserById = (id: number) => {
     .then((res) => res.json())
     .then((res) => {
       const model = MapApiToUserViewModel(res);
-      console.log(model);
       return model;
     });
 };

@@ -12,7 +12,6 @@ const Pagination = ({
   pageCount: number;
 }) => {
   const router = useRouter();
-  const [buttons, setButtons] = useState(new Array<number>());
   const range = (from: number, to: number) => {
     if (to < from) {
       return [];
@@ -23,7 +22,6 @@ const Pagination = ({
       (value: number, index: number, array: number[]) =>
         (array[index] = from + index)
     );
-    console.log(array);
     return array;
   };
 
@@ -31,11 +29,23 @@ const Pagination = ({
     router.push(`/users/${page}`);
   };
 
+  const applyStyleForButton = (page: number) => {
+    if (page == currentPage) {
+      return "text-2xl text-black-900 text-bold mr-2";
+    } else {
+      return "text-2xl text-slate-500 mr-2";
+    }
+  };
+
   return (
-    <div className="layout flex">
+    <div className="flex justify-center mt-2">
       {pageCount &&
         range(1, pageSize).map((i: number) => (
-          <button key={i} onClick={() => handleClick(i)}>
+          <button
+            key={i}
+            className={applyStyleForButton(i)}
+            onClick={() => handleClick(i)}
+          >
             {i}
           </button>
         ))}

@@ -18,7 +18,7 @@ const UserPage = ({ params: { id } }: { params: { id: number } }) => {
   }, []);
 
   return (
-    <div className="flex content-center">
+    <div className="flex justify-center	">
       {user && <UserFullInfo {...user}></UserFullInfo>}
     </div>
   );

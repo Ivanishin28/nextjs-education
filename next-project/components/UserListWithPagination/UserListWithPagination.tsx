@@ -1,21 +1,23 @@
-import { UsersPaginationModel } from "../../models/UsersPaginationModel";
+import { UserListWithPaginationProps } from "../../models/Props/UserListWithPaginationProps";
 import { UserViewModel } from "../../models/UserViewModel";
 import Pagination from "./Pagination";
 import UserCard from "./UserCard";
 
-const UserListWithPagination = (props: UsersPaginationModel) => {
-  console.log(props);
+const UserListWithPagination = (props: UserListWithPaginationProps) => {
   return (
     <>
       <div className="user-list flex flex-wrap">
-        {props.items?.map((item: UserViewModel) => (
-          <UserCard
-            key={`${item.firstName} ${item.lastName}}`}
-            {...item}
-          ></UserCard>
+        {props.paginationModel.items?.map((item: UserViewModel) => (
+          <div
+            className="w-1/5 p-2 cursor-pointer"
+            key={item.id}
+            onClick={() => props.onUserSelected(item)}
+          >
+            <UserCard key={item.id} {...item}></UserCard>
+          </div>
         ))}
       </div>
-      <Pagination {...props}></Pagination>
+      <Pagination {...props.paginationModel}></Pagination>
     </>
   );
 };
