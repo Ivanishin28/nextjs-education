@@ -7,7 +7,7 @@ export type UserListWithPaginationProps = {
   onUserSelected: (user: UserViewModel) => void;
 };
 
-export class UserViewModel {
+export type UserViewModel = {
   id: number;
   firstName: string;
   lastName: string;
@@ -15,7 +15,7 @@ export class UserViewModel {
   image: string;
 }
 
-export class UsersPaginationModel {
+export type UsersPaginationModel = {
   pageSize: number;
   pageCount: number;
   currentPage: number;

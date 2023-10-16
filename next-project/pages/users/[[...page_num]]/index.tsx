@@ -7,9 +7,7 @@ import InitUsersPage from "../../../services/UsersPage/InitUsersPage";
 import { UsersPaginationModel } from "../../../types";
 
 const UsersPage = () => {
-  const [paginatedUsers, setPaginatedUsers] = useState(
-    new UsersPaginationModel()
-  );
+  const [paginatedUsers, setPaginatedUsers] = useState<UsersPaginationModel>();
   const router = useRouter();
 
   const params = useParams();
