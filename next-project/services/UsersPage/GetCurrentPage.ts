@@ -8,21 +8,24 @@ const tryParseInt = (str: string): number | null => {
 };
 
 const GetCurrentPage = ({
-  params,
-  searchParams,
+  page_num,
 }: {
-  params: any;
-  searchParams: { page: any };
+  page_num: Array<string>;
 }): number | null => {
-  const paramsPageNum = params?.page_num as Array<string>;
-  let pageNumber: number | null = 0;
-  if (paramsPageNum && paramsPageNum.length > 0) {
-    pageNumber = tryParseInt(paramsPageNum[0]);
-  } else if (searchParams?.page) {
-    pageNumber = tryParseInt(searchParams.page);
+  if (page_num && page_num.length > 0) {
+    const page = tryParseInt(page_num[0]);
+    return page;
   }
+  return null;
+  // const paramsPageNum = params?.page_num as Array<string>;
+  // let pageNumber: number | null = 0;
+  // if (paramsPageNum && paramsPageNum.length > 0) {
+  //   pageNumber = tryParseInt(paramsPageNum[0]);
+  // } else if (searchParams?.page) {
+  //   pageNumber = tryParseInt(searchParams.page);
+  // }
 
-  return pageNumber;
+  // return pageNumber;
 };
 
 export default GetCurrentPage;

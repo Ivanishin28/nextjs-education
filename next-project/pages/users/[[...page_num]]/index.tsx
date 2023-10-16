@@ -1,19 +1,19 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import SearchUsers from "../../../../components/SearchUsers";
-import UserListWithPagination from "../../../../components/UserListWithPagination/UserListWithPagination";
-import { UsersPaginationModel } from "../../../../models/UsersPaginationModel";
-import { UserViewModel } from "../../../../models/UserViewModel";
-import { useRouter } from "../../../../node_modules/next/navigation";
-import InitUsersPage from "../../../../services/UsersPage/InitUsersPage";
+import SearchUsers from "../../../components/SearchUsers";
+import UserListWithPagination from "../../../components/UserListWithPagination/UserListWithPagination";
+import { UsersPaginationModel } from "../../../models/UsersPaginationModel";
+import { UserViewModel } from "../../../models/UserViewModel";
+import { useParams } from "../../../node_modules/next/navigation";
+import { useRouter } from "../../../node_modules/next/router";
+import InitUsersPage from "../../../services/UsersPage/InitUsersPage";
 
-const UsersPage = (params: any) => {
+const UsersPage = () => {
   const [paginatedUsers, setPaginatedUsers] = useState(
     new UsersPaginationModel()
   );
-
   const router = useRouter();
+
+  const params = useParams();
 
   const navigateToUserPage = (userId: number) => {
     router.push(`/user/${userId}`);
@@ -23,12 +23,13 @@ const UsersPage = (params: any) => {
     const fetchData = async () => {
       const paginatedRes = await InitUsersPage(params);
       if (!paginatedRes) {
-        router.push("404");
+        router.push("/404");
+      } else {
+        setPaginatedUsers(paginatedRes!);
       }
-      setPaginatedUsers(paginatedRes!);
     };
-    fetchData();
-  }, []);
+    params && fetchData();
+  }, [params]);
 
   return (
     <div className="flex flex-col items-center pt-5">

@@ -7,7 +7,7 @@ const UserListWithPagination = (props: UserListWithPaginationProps) => {
   return (
     <>
       <div className="user-list flex flex-wrap">
-        {props.paginationModel.items?.map((item: UserViewModel) => (
+        {props.paginationModel?.items?.map((item: UserViewModel) => (
           <div
             className="w-1/5 p-2 cursor-pointer"
             key={item.id}
