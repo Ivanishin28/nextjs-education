@@ -1,23 +1,29 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import UserFullInfo from "../../../components/UserFullInfo";
-import { useParams } from "../../../node_modules/next/navigation";
+import { useRouter } from "../../../node_modules/next/navigation";
 import GetUserById from "../../../services/GetUserById";
 import { UserViewModel } from "../../../types";
+import { GetServerSideProps } from "next";
 
-const UserPage: FC<void> = () => {
-  const [user, setUser] = useState<UserViewModel | null>(null);
-  const params = useParams();
+export type UserPageProps = {
+  user: UserViewModel;
+};
 
-  useEffect(() => {
-    const getUser = async () => {
-      if (params.id && params.id.length) {
-        const user = await GetUserById(Number(params.id[0]));
-        setUser(user);
-      }
-    };
+export const getServerSideProps: GetServerSideProps<UserPageProps> = async (
+  context: any
+) => {
+  if (context.query.id && typeof context.query.id == "string") {
+    const user = await GetUserById(Number(context.query.id));
+    return user ? { props: { user: user } } : null;
+  }
+};
 
-    params && getUser();
-  }, [params]);
+const UserPage: FC<UserPageProps> = ({ user }) => {
+  const router = useRouter();
+
+  if (!user) {
+    router.push("/404");
+  }
 
   return (
     <div className="flex justify-center	">
