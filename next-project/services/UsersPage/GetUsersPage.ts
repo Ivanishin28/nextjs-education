@@ -1,4 +1,4 @@
-import { UsersPaginationModel } from "../../models/UsersPaginationModel";
+import { UsersPaginationModel } from "../../types";
 
 const GetUsersPage = (
   pageSize: number,

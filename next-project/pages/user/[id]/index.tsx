@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import UserFullInfo from "../../../components/UserFullInfo";
-import { UserViewModel } from "../../../models/UserViewModel";
 import { useParams } from "../../../node_modules/next/navigation";
 import GetUserById from "../../../services/GetUserById";
+import { UserViewModel } from "../../../types";
 
-const UserPage = () => {
-  const [user, setUser] = useState(new UserViewModel());
+const UserPage: FC<void> = () => {
+  const [user, setUser] = useState<UserViewModel | null>(null);
   const params = useParams();
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const UserPage = () => {
 
   return (
     <div className="flex justify-center	">
-      {user && <UserFullInfo {...user}></UserFullInfo>}
+      {user && <UserFullInfo user={user}></UserFullInfo>}
     </div>
   );
 };

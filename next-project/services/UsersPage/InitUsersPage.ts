@@ -1,4 +1,4 @@
-import { UsersPaginationModel } from "../../models/UsersPaginationModel";
+import { UsersPaginationModel } from "../../types";
 import GetCurrentPage from "./GetCurrentPage";
 import GetUsersPage from "./GetUsersPage";
 

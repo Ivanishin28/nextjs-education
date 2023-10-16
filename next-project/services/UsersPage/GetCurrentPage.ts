@@ -17,15 +17,6 @@ const GetCurrentPage = ({
     return page;
   }
   return null;
-  // const paramsPageNum = params?.page_num as Array<string>;
-  // let pageNumber: number | null = 0;
-  // if (paramsPageNum && paramsPageNum.length > 0) {
-  //   pageNumber = tryParseInt(paramsPageNum[0]);
-  // } else if (searchParams?.page) {
-  //   pageNumber = tryParseInt(searchParams.page);
-  // }
-
-  // return pageNumber;
 };
 
 export default GetCurrentPage;

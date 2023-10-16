@@ -1,5 +1,4 @@
-import { UserListWithPaginationProps } from "../../models/Props/UserListWithPaginationProps";
-import { UserViewModel } from "../../models/UserViewModel";
+import { UserListWithPaginationProps, UserViewModel } from "../../types";
 import Pagination from "./Pagination";
 import UserCard from "./UserCard";
 

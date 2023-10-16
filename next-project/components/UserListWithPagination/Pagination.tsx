@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { UsersPaginationModel } from "../../models/UsersPaginationModel";
 import { useRouter } from "../../node_modules/next/navigation";
 
 const Pagination = ({

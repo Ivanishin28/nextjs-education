@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import SearchUsers from "../../../components/SearchUsers";
 import UserListWithPagination from "../../../components/UserListWithPagination/UserListWithPagination";
-import { UsersPaginationModel } from "../../../models/UsersPaginationModel";
-import { UserViewModel } from "../../../models/UserViewModel";
 import { useParams } from "../../../node_modules/next/navigation";
 import { useRouter } from "../../../node_modules/next/router";
 import InitUsersPage from "../../../services/UsersPage/InitUsersPage";
+import { UsersPaginationModel } from "../../../types";
 
 const UsersPage = () => {
   const [paginatedUsers, setPaginatedUsers] = useState(
@@ -38,7 +37,7 @@ const UsersPage = () => {
           onUserSelected={(user) => navigateToUserPage(user.id)}
         ></SearchUsers>
       </div>
-      <div className="">
+      <div>
         <UserListWithPagination
           paginationModel={paginatedUsers}
           onUserSelected={(user: UserViewModel) => {
