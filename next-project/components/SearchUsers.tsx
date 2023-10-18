@@ -1,14 +1,14 @@
 import Image from "next/image";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import SearchUsersByName from "../services/SearchUserByName";
 import { SearchUsersModalProps, UserViewModel } from "../types";
+import debounce from "lodash.debounce";
+import UseDebounceRacing from "../hooks/useDebounceRacing";
 
 const SearchUsers = (props: SearchUsersModalProps) => {
-  const [foundUsersValue, foundUsersChange] = useState(
-    new Array<UserViewModel>()
-  );
-  const [nameValue, nameChange] = useState("");
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [users, setUsers] = useState(new Array<UserViewModel>());
+  const [nameField, setNameField] = useState("");
+  const [isModalVisible, setModalVisible] = useState(true);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -26,37 +26,62 @@ const SearchUsers = (props: SearchUsersModalProps) => {
     };
   }, [ref]);
 
+  const delay = (ms: number, isRandom: boolean = false) => {
+    const toWait = ms * (isRandom ? Math.random() : 1);
+    return new Promise((res) => setTimeout(res, toWait));
+  };
+
+  const deb = useMemo(
+    () =>
+      debounce(async (name: string, cancellation: () => boolean) => {
+        console.log("deb");
+        await delay(3000);
+        const users = await filterUsers(name);
+        const flag = cancellation();
+        if (flag) {
+          setUsers(users);
+        }
+      }, 500),
+    []
+  );
+
+  useEffect(() => {
+    let flag = true;
+    const fetchUsers = async () => {
+      deb(nameField, () => flag);
+    };
+
+    fetchUsers();
+
+    return () => {
+      flag = false;
+    };
+  }, [nameField]);
+
   const filterUsers = async (name: string) => {
+    let users: Array<UserViewModel>;
     if (!name) {
-      foundUsersChange([]);
-      return;
-    }
-    const users = await SearchUsersByName(name);
-    if (users) {
-      foundUsersChange(users);
+      users = [];
+    } else {
+      users = (await SearchUsersByName(name)) ?? [];
     }
 
     return users;
   };
 
   const onNameChange = async (name: string) => {
-    nameChange(name);
-    const users = await filterUsers(name);
-    if (users && users.length) {
-      setModalVisible(true);
-    } else {
-      setModalVisible(false);
-    }
+    setNameField(name);
+    setModalVisible(true);
   };
 
   const renderModal = (isVisible: boolean) => {
     return isVisible ? (
       <div className="absolute overflow-y-auto max-h-72 bg-slate-600 shadow z-10 flex-column min-fit w-full px-3">
-        {foundUsersValue.map((user) => (
+        {users.map((user) => (
           <div
             className="flex justify-between items-center cursor-pointer"
             onClick={() => props.onUserSelected(user)}
-            key={user.firstName}
+            key={user.id}
           >
             <div className="flex items-center">
               <div className="relative w-16 aspect-square">
@@ -81,8 +106,9 @@ const SearchUsers = (props: SearchUsersModalProps) => {
       <input
         name="searchUserInput"
         type="text"
+        autoComplete="off"
         className="text-xl font-bold text-slate-600 p-2"
-        value={nameValue}
+        value={nameField}
         onChange={(event) => onNameChange(event.target.value)}
       ></input>
       <>{renderModal(isModalVisible)}</>
