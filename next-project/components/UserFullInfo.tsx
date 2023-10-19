@@ -10,7 +10,7 @@ const UserFullInfo: FC<UserFullInfoProps> = ({ user }) => {
   return (
     <div className="flex w-auto">
       <div className="relative w-72 aspect-square">
-        <Image src={user.image} alt={user.lastName} fill />
+        <Image src={user.image} sizes="50vw" alt={user.lastName} fill />
       </div>
 
       <div className="pt-8">
