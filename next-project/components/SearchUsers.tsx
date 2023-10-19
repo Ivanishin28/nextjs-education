@@ -1,91 +1,94 @@
-import Image from "next/image";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo, FC } from "react";
 import SearchUsersByName from "../services/SearchUserByName";
-import { SearchUsersModalProps, UserViewModel } from "../types";
+import { SearchUsersModalProps, UserDictionary, UserViewModel } from "../types";
+import debounce from "lodash.debounce";
+import UseDebounceRacing from "../hooks/useDebounceRacing";
+import UsersDropdownModal from "./UsersDropdownModal";
 
-const SearchUsers = (props: SearchUsersModalProps) => {
-  const [foundUsersValue, foundUsersChange] = useState(
-    new Array<UserViewModel>()
+export type SearchUsersModalProps = {
+  onUserSelected: (user: UserViewModel) => void;
+};
+
+const SearchUsers: FC<SearchUsersModalProps> = ({ onUserSelected }) => {
+  const [users, setUsers] = useState(new Array<UserViewModel>());
+  const [nameField, setNameField] = useState("");
+  const [isModalVisible, setModalVisible] = useState(true);
+
+  const componentDivRef = useRef<HTMLDivElement>(null);
+
+  const usersCache = useMemo(() => new UserDictionary(), []);
+  const debouncedFetchUsers = useMemo(
+    () =>
+      debounce(
+        async (name: string, setUsers: (users: UserViewModel[]) => void) => {
+          let users: UserViewModel[];
+          const cachedUser = usersCache.getItem(name);
+          if (cachedUser) {
+            users = cachedUser;
+          } else {
+            users = await filterUsers(name);
+            usersCache.setItem(name, users);
+          }
+          setUsers(users);
+        },
+        500
+      ),
+    []
   );
-  const [nameValue, nameChange] = useState("");
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleOutSideClick = (event: MouseEvent) => {
-      if (!ref.current?.contains(event.target as Node)) {
-        setModalVisible(false);
-      }
+    let flag = true;
+    const fetchUsers = async () => {
+      debouncedFetchUsers(nameField, (users: UserViewModel[]) => {
+        if (flag) {
+          setUsers(users);
+        }
+      });
     };
 
-    window.addEventListener("click", handleOutSideClick);
+    fetchUsers();
 
     return () => {
-      window.removeEventListener("click", handleOutSideClick);
+      flag = false;
     };
-  }, [ref]);
+  }, [nameField]);
 
   const filterUsers = async (name: string) => {
+    let users: Array<UserViewModel>;
     if (!name) {
-      foundUsersChange([]);
-      return;
-    }
-    const users = await SearchUsersByName(name);
-    if (users) {
-      foundUsersChange(users);
+      users = [];
+    } else {
+      users = (await SearchUsersByName(name)) ?? [];
     }
 
     return users;
   };
 
   const onNameChange = async (name: string) => {
-    nameChange(name);
-    const users = await filterUsers(name);
-    if (users && users.length) {
-      setModalVisible(true);
-    } else {
-      setModalVisible(false);
-    }
-  };
-
-  const renderModal = (isVisible: boolean) => {
-    return isVisible ? (
-      <div className="absolute overflow-y-auto max-h-72 bg-slate-600 shadow z-10 flex-column min-fit w-full px-3">
-        {foundUsersValue.map((user) => (
-          <div
-            className="flex justify-between items-center cursor-pointer"
-            onClick={() => props.onUserSelected(user)}
-            key={user.firstName}
-          >
-            <div className="flex items-center">
-              <div className="relative w-16 aspect-square">
-                <Image src={user.image} alt={user.lastName} fill />
-              </div>
-              <p className="ml-1 text-slate-400">
-                {`${user.firstName} ${user.lastName}`}
-              </p>
-            </div>
-
-            <p className="text-slate-400">{">"}</p>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <></>
-    );
+    setNameField(name);
+    setModalVisible(true);
   };
 
   return (
-    <div ref={ref} className="relative w-full">
+    <div ref={componentDivRef} className="relative w-full">
       <input
         name="searchUserInput"
         type="text"
+        autoComplete="off"
         className="text-xl font-bold text-slate-600 p-2"
-        value={nameValue}
+        value={nameField}
         onChange={(event) => onNameChange(event.target.value)}
       ></input>
-      <>{renderModal(isModalVisible)}</>
+      {isModalVisible ? (
+        <UsersDropdownModal
+          users={users}
+          parentRef={componentDivRef}
+          onUserSelected={onUserSelected}
+          setModalVisible={(isVisible: boolean) => setModalVisible(isVisible)}
+        ></UsersDropdownModal>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
